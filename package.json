@@ -20,6 +20,7 @@
     "clsx": "^1.2.1",
     "focus-visible": "^5.2.0",
     "framer-motion": "^6.5.1",
+    "html2canvas": "^1.4.1",
     "lexical": "^0.7.6",
     "next": "13.0.2",
     "postcss-focus-visible": "^6.0.4",
