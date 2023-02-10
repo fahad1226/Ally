@@ -2,6 +2,7 @@ import { CodeHighlightNode, CodeNode } from '@lexical/code'
 import { AutoLinkNode, LinkNode } from '@lexical/link'
 import { ListItemNode, ListNode } from '@lexical/list'
 import { TRANSFORMERS } from '@lexical/markdown'
+
 import { AutoFocusPlugin } from '@lexical/react/LexicalAutoFocusPlugin'
 import { LexicalComposer } from '@lexical/react/LexicalComposer'
 import { ContentEditable } from '@lexical/react/LexicalContentEditable'
@@ -14,11 +15,12 @@ import { OnChangePlugin } from '@lexical/react/LexicalOnChangePlugin'
 import { RichTextPlugin } from '@lexical/react/LexicalRichTextPlugin'
 import { HeadingNode, QuoteNode } from '@lexical/rich-text'
 import { TableCellNode, TableNode, TableRowNode } from '@lexical/table'
-import { $getRoot, $getSelection } from 'lexical'
+import { $getRoot, $getSelection, createEditor } from 'lexical'
 import ToolbarPlugin from '../plugins/ToolbarPlugin'
 import ExampleTheme from '../themes/ExampleTheme'
 
-import { useEffect, useState } from 'react'
+import api from '@/config/api'
+import { useState } from 'react'
 import AutoLinkPlugin from '../plugins/AutoLinkPlugin'
 import CodeHighlightPlugin from '../plugins/CodeHighlightPlugin'
 import ListMaxIndentLevelPlugin from '../plugins/ListMaxIndentLevelPlugin'
@@ -54,35 +56,43 @@ const editorConfig = {
   ],
 }
 
-export default function Editor(props) {
-  const [count, setCount] = useState(0)
+const editor = createEditor(editorConfig)
 
+export default function Editor(props) {
   const [txt, setTxt] = useState('')
 
-  useEffect(() => {
-    // Update the document title using the browser API
-    console.log(`You clicked ${count} times`)
-  })
+  // word count
+  const [wordCount, setWordCount] = useState(0)
 
-  function sendAPIRequest() {
+  const sendAPIRequest = async () => {
     console.log('text is', txt)
+    const { data } = await api().get('grammer-check', {
+      params: {
+        text: txt,
+      },
+    })
+
+    onChange()
+
+    console.log('response is', data.choices[0].text)
   }
 
-  // When the editor changes, you can get notified via the
-  // LexicalOnChangePlugin!
   function onChange(editorState) {
     editorState.read(() => {
-      console.log('coount is', count)
-      // Read the contents of the EditorState here.
       const root = $getRoot().__cachedText
+      const words = root.split(' ')
+      // update word count
+      let wordCount = 0
+      words.forEach((word) => {
+        if (word.trim() !== '') {
+          wordCount++
+        }
+      })
+      setWordCount(wordCount)
       setTxt(root)
       const selection = $getSelection()
-      console.log('my state is', root)
+      console.log('selection is', selection)
     })
-  }
-
-  const handleClick = () => {
-    props.handleData('some data')
   }
 
   return (
@@ -94,7 +104,7 @@ export default function Editor(props) {
           </div>
         </div>
 
-        <div className="editor-inner">
+        <div className="editor-inner h-[30rem]">
           <RichTextPlugin
             contentEditable={<ContentEditable className="editor-input" />}
             placeholder={<Placeholder />}
@@ -111,13 +121,22 @@ export default function Editor(props) {
           <ListMaxIndentLevelPlugin maxDepth={7} />
           <MarkdownShortcutPlugin transformers={TRANSFORMERS} />
         </div>
-        <div className="flex w-full items-center justify-center pt-44">
+        <div className="flex w-full items-center justify-between">
+          <div>
+            <span className="text-gray-500">{wordCount} words</span>
+          </div>
           <button
             type="button"
             onClick={sendAPIRequest}
-            class="mr-2 mb-2 w-[50%] rounded-lg bg-gradient-to-r from-pink-400 via-pink-500 to-pink-600 px-5 py-2.5 text-center text-sm font-medium text-white shadow-lg shadow-pink-500/50 hover:bg-gradient-to-br focus:outline-none dark:shadow-lg dark:shadow-pink-800/80 dark:focus:ring-pink-800"
+            className="mr-2 mb-2 w-[20%] rounded-full border border-pink-300 bg-gray-50 py-2.5 text-gray-600 shadow-md shadow-slate-200"
           >
-            Click to Correct
+            Fix errors
+          </button>
+          <button
+            type="button"
+            className="mr-2 mb-2 w-[20%] rounded-full border border-green-300 py-2.5  text-gray-600 shadow-md shadow-slate-200"
+          >
+            Summerize text
           </button>
         </div>
       </div>

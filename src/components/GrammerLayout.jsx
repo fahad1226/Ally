@@ -82,7 +82,7 @@ export function GrammerLayout({ title, subtitle, children }) {
         <h1 className="mb-2 text-center text-sm font-thin uppercase md:mb-6 lg:text-2xl">
           {title}
         </h1>
-        <div className="z-50 h-full w-full rounded-md bg-white py-2 px-4 shadow-2xl shadow-gray-900/10 sm:mx-0 sm:flex-none md:h-auto md:py-10 lg:rounded-5xl">
+        <div className="z-50 w-full rounded-md bg-white py-2 px-4 shadow-2xl shadow-gray-900/10 sm:mx-0 sm:flex-none lg:rounded-5xl">
           {children}
         </div>
       </div>
