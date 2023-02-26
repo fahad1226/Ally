@@ -14,7 +14,7 @@
   font-named-instance: 'Italic';
   src: url('/fonts/Inter-italic.var.woff2') format('woff2');
 }
-@import './editor.css';
+
 @tailwind base;
 @tailwind components;
 @tailwind utilities;

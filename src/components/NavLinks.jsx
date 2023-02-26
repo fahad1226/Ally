@@ -9,6 +9,7 @@ export function NavLinks() {
     ['Features', '#features'],
     ['Grammer Correction', 'grammer'],
     ['Image Creation', 'make-image'],
+    ['Images', 'all-images'],
     ['FAQs', '#faqs'],
   ].map(([label, href], index) => (
     <Link

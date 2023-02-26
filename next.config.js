@@ -2,7 +2,7 @@
 const nextConfig = {
   reactStrictMode: false,
   experimental: {
-    scrollRestoration: true,
+    scrollRestoration: false,
   },
 }
 
